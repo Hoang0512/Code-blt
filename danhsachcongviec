@@ -1,12 +1,7 @@
 [
     {
-        "ten": "Lao Công",
-        "gio": 21,
-        "luong": 1000000
-    },
-    {
-        "ten": "Bốc gạch",
+        "ten": "Đầu Bếp",
         "gio": 8,
-        "luong": 250000
+        "luong": 100000
     }
 ]
