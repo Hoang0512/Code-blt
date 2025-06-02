@@ -9,8 +9,8 @@ def ghi_file():
             json.dump([
                 {
                     "ten": cv["ten"],
-                    "gio": int(cv["gio"]) if cv["gio"].is_integer() else cv["gio"],
-                    "luong": int(cv["luong"]) if cv["luong"].is_integer() else cv["luong"]
+                    "gio": int(cv["gio"]) if isinstance(cv["gio"], float) and cv["gio"].is_integer() else cv["gio"],
+                    "luong": int(cv["luong"]) if isinstance(cv["luong"], float) and cv["luong"].is_integer() else cv["luong"]
                 } for cv in danh_sach_cong_viec
             ], f, ensure_ascii=False, indent=4)
     except Exception as e:
@@ -59,7 +59,7 @@ def tim_cong_viec():
     for cv in danh_sach_cong_viec:
         if cv['ten'].lower() == ten.lower():
             print(f"Tìm thấy: {cv['ten']} - {cv['gio']} giờ - {cv['luong']} đ/giờ")
-            return  
+            return
     print("Không tìm thấy công việc.")
 
 def tong_gio_lam():
@@ -85,6 +85,49 @@ def gio_lam_nhieu_nhat():
     max_cv = max(danh_sach_cong_viec, key=lambda x: x['gio'])
     print(f"Công việc làm nhiều giờ nhất: {max_cv['ten']} - {max_cv['gio']} giờ")
 
+def sap_xep_theo_ten():
+    if not danh_sach_cong_viec:
+        print("Danh sách trống.")
+        return
+    danh_sach = sorted(danh_sach_cong_viec, key=lambda x: x['ten'].lower())
+    for i, cv in enumerate(danh_sach, 1):
+        print(f"{i}. {cv['ten']} - {cv['gio']} giờ - {cv['luong']} đ/giờ")
+
+def sap_xep_theo_thu_nhap():
+    if not danh_sach_cong_viec:
+        print("Danh sách trống.")
+        return
+    danh_sach = sorted(danh_sach_cong_viec, key=lambda x: x['gio'] * x['luong'], reverse=True)
+    for i, cv in enumerate(danh_sach, 1):
+        print(f"{i}. {cv['ten']} - {cv['gio']} giờ - {cv['luong']} đ/giờ - Thu nhập: {cv['gio'] * cv['luong']} đ")
+
+def luong_trung_binh():
+    if not danh_sach_cong_viec:
+        print("Danh sách trống.")
+        return
+    tb = sum(cv['luong'] for cv in danh_sach_cong_viec) / len(danh_sach_cong_viec)
+    print(f"Lương trung bình theo giờ: {tb:.2f} đ/giờ")
+
+def loc_cong_viec_luong_cao():
+    muc = int(input("Nhập mức lương tối thiểu (đ/giờ): "))
+    loc = [cv for cv in danh_sach_cong_viec if cv['luong'] >= muc]
+    if not loc:
+        print("Không có công việc nào phù hợp.")
+        return
+    for cv in loc:
+        print(f"{cv['ten']} - {cv['gio']} giờ - {cv['luong']} đ/giờ")
+
+def dem_cong_viec():
+    print(f"Tổng số công việc hiện có: {len(danh_sach_cong_viec)}")
+
+def xuat_bao_cao():
+    print("===== BÁO CÁO TỔNG HỢP =====")
+    tong_gio_lam()
+    tong_thu_nhap()
+    cong_viec_thu_nhap_cao_nhat()
+    gio_lam_nhieu_nhat()
+    luong_trung_binh()
+    dem_cong_viec()
 
 def luu_file_json():
     global ten_file
@@ -124,9 +167,15 @@ if __name__ == "__main__":
         print("9. Công việc nhiều giờ nhất")
         print("10. Xuất dữ liệu ra file")
         print("11. Đọc dữ liệu từ file")
-        print("12. Thoát")
+        print("12. Sắp xếp theo tên")
+        print("13. Sắp xếp theo thu nhập")
+        print("14. Tính lương trung bình")
+        print("15. Lọc công việc lương cao")
+        print("16. Đếm số công việc")
+        print("17. Xuất báo cáo tổng hợp")
+        print("18. Thoát")
 
-        chon = input("Chọn chức năng (1-12): ")
+        chon = input("Chọn chức năng (1-18): ")
 
         if chon == "1":
             them_cong_viec()
@@ -151,7 +200,19 @@ if __name__ == "__main__":
         elif chon == "11":
             doc_file_json()
         elif chon == "12":
+            sap_xep_theo_ten()
+        elif chon == "13":
+            sap_xep_theo_thu_nhap()
+        elif chon == "14":
+            luong_trung_binh()
+        elif chon == "15":
+            loc_cong_viec_luong_cao()
+        elif chon == "16":
+            dem_cong_viec()
+        elif chon == "17":
+            xuat_bao_cao()
+        elif chon == "18":
             print("kết thúc chương trình!")
             break
         else:
-            print("Vui lòng chọn từ 1 đến 11.")
+            print("Vui lòng chọn từ 1 đến 18.")
